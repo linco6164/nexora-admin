@@ -1,0 +1,207 @@
+.listings-page {
+  width: 100%;
+  min-height: 100vh;
+  padding: 32px;
+  background: #f6f7f8;
+}
+
+.listings-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 22px;
+}
+
+.listings-header h1 {
+  margin: 0;
+  color: #171a1c;
+  font-size: 30px;
+  font-weight: 750;
+}
+
+.listings-header p {
+  margin-top: 7px;
+  color: #7b858b;
+  font-size: 14px;
+}
+
+.listings-card {
+  overflow: hidden;
+  border: 1px solid #e2e6e8;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.035);
+}
+
+.listings-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.listings-table thead {
+  background: #fafbfb;
+}
+
+.listings-table th {
+  padding: 15px 20px;
+  border-bottom: 1px solid #edf0f1;
+  text-align: left;
+  color: #7b858b;
+  font-size: 11px;
+  font-weight: 750;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.listings-table td {
+  padding: 17px 20px;
+  border-bottom: 1px solid #edf0f1;
+  color: #343b3f;
+  font-size: 14px;
+}
+
+.listings-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.listings-table tbody tr:hover {
+  background: #fcfdfd;
+}
+
+.listing-title {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.listing-title strong {
+  color: #202629;
+  font-size: 14px;
+}
+
+.listing-id {
+  color: #9aa2a7;
+  font-family:
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    Monaco,
+    Consolas,
+    monospace;
+  font-size: 11px;
+}
+
+.listing-price {
+  color: #159447;
+  font-size: 15px;
+  font-weight: 750;
+}
+
+.listing-seller {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.listing-avatar {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #ecfbf2;
+  color: #159447;
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.listing-status {
+  display: inline-flex;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.listing-status.active {
+  background: #ecfbf2;
+  color: #158944;
+}
+
+.listing-status.sold {
+  background: #edf2ff;
+  color: #4d68bb;
+}
+
+.listing-status.pending {
+  background: #fff5e9;
+  color: #c66b0a;
+}
+
+.listing-action-delete {
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 12px;
+  border: 1px solid #f1c5c5;
+  border-radius: 8px;
+  background: #fff3f3;
+  color: #cf3e3e;
+  font-size: 12px;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.listing-action-delete:hover {
+  background: #ffe8e8;
+}
+
+.listings-empty {
+  min-height: 320px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #929a9f;
+}
+
+.listings-pagination {
+  display: flex;
+  gap: 6px;
+  margin-top: 18px;
+}
+
+.listings-page-button {
+  min-width: 36px;
+  height: 36px;
+  padding: 0 10px;
+  border: 1px solid #dfe4e7;
+  border-radius: 8px;
+  background: #fff;
+  color: #596268;
+  cursor: pointer;
+}
+
+.listings-page-button.active {
+  border-color: #50c878;
+  background: #50c878;
+  color: #fff;
+}
+
+@media (max-width: 1050px) {
+  .listings-card {
+    overflow-x: auto;
+  }
+
+  .listings-table {
+    min-width: 800px;
+  }
+}
+
+@media (max-width: 700px) {
+  .listings-page {
+    padding: 18px;
+  }
+}
