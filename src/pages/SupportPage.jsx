@@ -87,7 +87,7 @@ export default function SupportPage() {
     useState(null);
 
   const [activeFilter, setActiveFilter] =
-    useState("my");
+    useState("unassigned");
 
   const [activeDepartment, setActiveDepartment] =
     useState(null);

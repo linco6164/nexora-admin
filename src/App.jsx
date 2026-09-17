@@ -12,6 +12,8 @@ import WithdrawalsPage from "./pages/WithdrawalsPage";
 import SupportPage from "./pages/SupportPage";
 import CreateUserPage from "./pages/CreateUserPage";
 
+import PermissionRoute from "./components/PermissionRoute";
+
 function Layout({ children }) {
   return (
     <div style={{ display: "flex" }}>
@@ -32,74 +34,74 @@ export default function App() {
           <Route
             path="/"
             element={
-              <ProtectedRoute>
+              <PermissionRoute permission="finance">
                 <Layout>
                   <DashboardPage />
                 </Layout>
-              </ProtectedRoute>
+              </PermissionRoute>
             }
           />
           <Route
             path="/users/create"
             element={
-              <ProtectedRoute>
+              <PermissionRoute permission="admin">
                 <Layout>
                   <CreateUserPage />
                 </Layout>
-              </ProtectedRoute>
+              </PermissionRoute>
             }
           />
           <Route
             path="/users"
             element={
-              <ProtectedRoute>
+              <PermissionRoute permission="admin">
                 <Layout>
                   <UsersPage />
                 </Layout>
-              </ProtectedRoute>
+              </PermissionRoute>
             }
           />
           <Route
             path="/listings"
             element={
-              <ProtectedRoute>
+              <PermissionRoute permission="admin">
                 <Layout>
                   <ListingsPage />
                 </Layout>
-              </ProtectedRoute>
+              </PermissionRoute>
             }
           />
           <Route
             path="/broadcast"
             element={
-              <ProtectedRoute>
+              <PermissionRoute permission="admin">
                 <Layout>
                   <BroadcastPage />
                 </Layout>
-              </ProtectedRoute>
+              </PermissionRoute>
             }
           />
           <Route
             path="/users/:id"
             element={
-              <ProtectedRoute>
+              <PermissionRoute permission="admin">
                 <Layout>
                   <UserDetailPage />
                 </Layout>
-              </ProtectedRoute>
+              </PermissionRoute>
             }
           />
           <Route
             path="/withdrawals"
             element={
-              <ProtectedRoute>
+              <PermissionRoute permission="finance">
                 <Layout>
                   <WithdrawalsPage />
                 </Layout>
-              </ProtectedRoute>
+              </PermissionRoute>
             }
           />
-          <Route path="/support" element={<SupportPage />} />
+          <Route path="/support" element={<PermissionRoute permission="finance"><SupportPage /></PermissionRoute>} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

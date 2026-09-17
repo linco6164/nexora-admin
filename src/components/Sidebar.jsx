@@ -8,10 +8,21 @@ import {
   Wallet,
   MessageCircle,
 } from "lucide-react";
+
 import { useAuth } from "../context/AuthContext";
 
 export default function Sidebar() {
-  const { logout } = useAuth();
+  const {
+    user,
+    isAdmin,
+    isFinance,
+    isIT,
+    isLogistics,
+    isModerator,
+    isSupportAgent,
+    isSupportManager,
+    logout,
+  } = useAuth();
 
   const linkStyle = ({ isActive }) => ({
     display: "flex",
@@ -20,7 +31,9 @@ export default function Sidebar() {
     padding: "12px 20px",
     color: isActive ? "#50C878" : "#333",
     textDecoration: "none",
-    background: isActive ? "#f0fdf4" : "transparent",
+    background: isActive
+      ? "#f0fdf4"
+      : "transparent",
     borderRadius: 8,
     margin: "4px 12px",
   });
@@ -45,35 +58,133 @@ export default function Sidebar() {
         Nexora Admin
       </h2>
 
-      <NavLink to="/" style={linkStyle} end>
+      {/* USER INFO */}
+      {user && (
+        <div
+          style={{
+            padding: "0 20px 16px",
+            borderBottom: "1px solid #eee",
+            marginBottom: 8,
+          }}
+        >
+          <div
+            style={{
+              fontSize: 13,
+              fontWeight: 600,
+              color: "#111",
+            }}
+          >
+            {user.role}
+          </div>
+
+          <div
+            style={{
+              fontSize: 12,
+              color: "#888",
+              marginTop: 3,
+            }}
+          >
+            {user.department}
+          </div>
+        </div>
+      )}
+
+      {/* DASHBOARD - TOȚI STAFF */}
+      <NavLink
+        to="/"
+        style={linkStyle}
+        end
+      >
         <LayoutDashboard size={20} />
         Dashboard
       </NavLink>
 
-      <NavLink to="/users" style={linkStyle}>
-        <Users size={20} />
-        Useri
-      </NavLink>
+      {/* ADMIN ONLY */}
+      {(isAdmin || isFinance ) && (
+        <>
+          <NavLink
+            to="/users"
+            style={linkStyle}
+          >
+            <Users size={20} />
+            Useri
+          </NavLink>
 
-      <NavLink to="/listings" style={linkStyle}>
-        <Package size={20} />
-        Anunțuri
-      </NavLink>
+          <NavLink
+            to="/listings"
+            style={linkStyle}
+          >
+            <Package size={20} />
+            Anunțuri
+          </NavLink>
 
-      <NavLink to="/withdrawals" style={linkStyle}>
-        <Wallet size={20} />
-        Retrageri
-      </NavLink>
+          <NavLink
+            to="/broadcast"
+            style={linkStyle}
+          >
+            <Bell size={20} />
+            Notificări
+          </NavLink>
+        </>
+      )}
 
-      <NavLink to="/broadcast" style={linkStyle}>
-        <Bell size={20} />
-        Notificări
-      </NavLink>
+      {/* FINANCE */}
+      {(isAdmin || isFinance) && (
+        <NavLink
+          to="/withdrawals"
+          style={linkStyle}
+        >
+          <Wallet size={20} />
+          Retrageri
+        </NavLink>
+      )}
 
-      <NavLink to="/support" style={linkStyle}>
-        <MessageCircle size={20} />
-        Suport
-      </NavLink>
+      {/* SUPPORT */}
+      {(isAdmin ||
+        isSupportAgent ||
+        isSupportManager ||
+        isFinance) && (
+        <NavLink
+          to="/support"
+          style={linkStyle}
+        >
+          <MessageCircle size={20} />
+          Suport
+        </NavLink>
+      )}
+
+      {/* IT */}
+      {isIT && (
+        <NavLink
+          to="/it"
+          style={linkStyle}
+        >
+          <Package size={20} />
+          IT
+        </NavLink>
+      )}
+
+      {/* LOGISTICS */}
+      {isLogistics && (
+        <NavLink
+          to="/logistics"
+          style={linkStyle}
+        >
+          <Package size={20} />
+          Logistică
+        </NavLink>
+      )}
+
+      {/* MODERATION */}
+      {isModerator && (
+        <NavLink
+          to="/moderation"
+          style={linkStyle}
+        >
+          <Package size={20} />
+          Moderare
+        </NavLink>
+      )}
 
       <button
         onClick={logout}
