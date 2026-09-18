@@ -716,7 +716,10 @@ export default function SupportPage() {
                     selectedTicket.department}
                 </span>
 
-                <h2>{selectedTicket.subject}</h2>
+                <h2>
+                  #{selectedTicket.ticketNumber}{" "}
+                  {selectedTicket.subject}
+                </h2>
 
                 <span className="conversation-category">
                   {selectedTicket.category}
