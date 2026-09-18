@@ -1,213 +1,116 @@
-const API_URL =
-  import.meta.env.VITE_API_URL || "http://localhost:5173";
+import axios from "axios";
 
-function getToken() {
-  return (
-    localStorage.getItem("token") ||
-    localStorage.getItem("accessToken") ||
-    sessionStorage.getItem("token") ||
-    sessionStorage.getItem("accessToken") ||
-    ""
-  );
-}
+const API_URL = import.meta.env.VITE_API_URL;
 
-async function request(
-  endpoint,
-  options = {},
-) {
-  const token = getToken();
+const supportClient = axios.create({
+  baseURL: API_URL,
+});
 
-  const response = await fetch(
-    `${API_URL}${endpoint}`,
-    {
-      ...options,
-      headers: {
-        "Content-Type": "application/json",
-        ...(token
-          ? {
-              Authorization: `Bearer ${token}`,
-            }
-          : {}),
-        ...(options.headers || {}),
-      },
-    },
-  );
+supportClient.interceptors.request.use((config) => {
+  const token = localStorage.getItem("admin_token");
 
-  const data = await response.json().catch(() => ({}));
-
-  if (!response.ok) {
-    throw new Error(
-      data?.message ||
-        "Eroare la comunicarea cu serverul.",
-    );
+  if (token) {
+    config.headers = config.headers || {};
+    config.headers.Authorization = `Bearer ${token}`;
   }
 
-  return data;
-}
-
-
-/*
-|--------------------------------------------------------------------------
-| STAFF INFO
-|--------------------------------------------------------------------------
-*/
+  return config;
+});
 
 export async function getSupportStaffInfo() {
-  return request("/support/staff/info");
+  const response = await supportClient.get("/support/staff/info");
+
+  return response.data;
 }
-
-
-/*
-|--------------------------------------------------------------------------
-| STATS
-|--------------------------------------------------------------------------
-*/
 
 export async function getSupportStats() {
-  return request("/support/staff/stats");
+  const response = await supportClient.get("/support/staff/stats");
+
+  return response.data;
 }
 
+export async function getSupportTickets(params = {}) {
+  const response = await supportClient.get("/support/staff/tickets", {
+    params,
+  });
 
-/*
-|--------------------------------------------------------------------------
-| TICKETS
-|--------------------------------------------------------------------------
-*/
+  const data = response.data;
 
-export async function getSupportTickets({
-  status,
-  department,
-  assignedTo,
-  priority,
-} = {}) {
-  const params = new URLSearchParams();
+  return {
+    ...data,
+    tickets: Array.isArray(data.tickets)
+      ? data.tickets
+      : Array.isArray(data.tickets?.tickets)
+        ? data.tickets.tickets
+        : [],
+  };
+}
 
-  if (status) {
-    params.set("status", status);
-  }
+export async function getSupportTicket(id) {
+  const response = await supportClient.get(`/support/staff/tickets/${id}`);
 
-  if (department) {
-    params.set("department", department);
-  }
+  return response.data;
+}
 
-  if (assignedTo) {
-    params.set("assignedTo", assignedTo);
-  }
-
-  if (priority) {
-    params.set("priority", priority);
-  }
-
-  const query = params.toString();
-
-  return request(
-    `/support/staff/tickets${
-      query ? `?${query}` : ""
-    }`,
+export async function assignSupportTicket(id) {
+  const response = await supportClient.post(
+    `/support/staff/tickets/${id}/assign`,
   );
+
+  return response.data;
 }
 
-
-export async function getSupportTicket(
-  ticketId,
-) {
-  return request(
-    `/support/staff/tickets/${ticketId}`,
+export async function unassignSupportTicket(id) {
+  const response = await supportClient.post(
+    `/support/staff/tickets/${id}/unassign`,
   );
+
+  return response.data;
 }
 
-
-/*
-|--------------------------------------------------------------------------
-| ASSIGNMENT
-|--------------------------------------------------------------------------
-*/
-
-export async function assignSupportTicket(
-  ticketId,
-) {
-  return request(
-    `/support/staff/tickets/${ticketId}/assign`,
+export async function updateSupportTicketStatus(id, status) {
+  const response = await supportClient.patch(
+    `/support/staff/tickets/${id}/status`,
     {
-      method: "POST",
+      status,
     },
   );
+
+  return response.data;
 }
 
-
-export async function unassignSupportTicket(
-  ticketId,
-) {
-  return request(
-    `/support/staff/tickets/${ticketId}/unassign`,
+export async function updateSupportTicketPriority(id, priority) {
+  const response = await supportClient.patch(
+    `/support/staff/tickets/${id}/priority`,
     {
-      method: "POST",
+      priority,
     },
   );
+
+  return response.data;
 }
 
-
-/*
-|--------------------------------------------------------------------------
-| STATUS
-|--------------------------------------------------------------------------
-*/
-
-export async function updateSupportTicketStatus(
-  ticketId,
-  status,
-) {
-  return request(
-    `/support/staff/tickets/${ticketId}/status`,
+export async function sendSupportMessage(id, message) {
+  const response = await supportClient.post(
+    `/support/staff/tickets/${id}/messages`,
     {
-      method: "PATCH",
-      body: JSON.stringify({
-        status,
-      }),
+      message,
     },
   );
+
+  return response.data;
 }
 
+export const supportApi = {
+  getStaffInfo: getSupportStaffInfo,
+  getStats: getSupportStats,
+  getTickets: getSupportTickets,
+  getTicket: getSupportTicket,
+  assignToMe: assignSupportTicket,
+  unassign: unassignSupportTicket,
+  updateStatus: updateSupportTicketStatus,
+  updatePriority: updateSupportTicketPriority,
+  sendMessage: sendSupportMessage,
+};
 
-/*
-|--------------------------------------------------------------------------
-| PRIORITY
-|--------------------------------------------------------------------------
-*/
-
-export async function updateSupportTicketPriority(
-  ticketId,
-  priority,
-) {
-  return request(
-    `/support/staff/tickets/${ticketId}/priority`,
-    {
-      method: "PATCH",
-      body: JSON.stringify({
-        priority,
-      }),
-    },
-  );
-}
-
-
-/*
-|--------------------------------------------------------------------------
-| MESSAGE
-|--------------------------------------------------------------------------
-*/
-
-export async function sendSupportMessage(
-  ticketId,
-  message,
-) {
-  return request(
-    `/support/staff/tickets/${ticketId}/messages`,
-    {
-      method: "POST",
-      body: JSON.stringify({
-        message,
-      }),
-    },
-  );
-}
+export default supportApi;

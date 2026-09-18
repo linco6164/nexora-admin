@@ -18,7 +18,6 @@ import {
 
 import "./css/SupportPage.css";
 
-
 const DEPARTMENT_LABELS = {
   general: "General",
   call_center: "Call Center",
@@ -30,13 +29,11 @@ const DEPARTMENT_LABELS = {
   account_security: "Account & Security",
 };
 
-
 const STATUS_LABELS = {
   open: "Open",
   pending: "On Hold",
   closed: "Resolved",
 };
-
 
 const PRIORITY_LABELS = {
   low: "Low",
@@ -45,68 +42,47 @@ const PRIORITY_LABELS = {
   urgent: "Urgent",
 };
 
-
 function formatDate(date) {
   if (!date) return "";
 
-  return new Date(date).toLocaleString(
-    "ro-RO",
-    {
-      day: "2-digit",
-      month: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-    },
-  );
+  return new Date(date).toLocaleString("ro-RO", {
+    day: "2-digit",
+    month: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 }
 
-
 function getTicketPreview(ticket) {
-  if (
-    !ticket?.messages ||
-    ticket.messages.length === 0
-  ) {
+  if (!ticket?.messages || ticket.messages.length === 0) {
     return "No messages";
   }
 
-  const message =
-    ticket.messages[
-      ticket.messages.length - 1
-    ];
+  const message = ticket.messages[ticket.messages.length - 1];
 
   return message?.message || "No messages";
 }
-
 
 export default function SupportPage() {
   const [staff, setStaff] = useState(null);
   const [stats, setStats] = useState(null);
 
   const [tickets, setTickets] = useState([]);
-  const [selectedTicket, setSelectedTicket] =
-    useState(null);
+  const [selectedTicket, setSelectedTicket] = useState(null);
 
-  const [activeFilter, setActiveFilter] =
-    useState("unassigned");
+  const [activeFilter, setActiveFilter] = useState("unassigned");
 
-  const [activeDepartment, setActiveDepartment] =
-    useState(null);
+  const [activeDepartment, setActiveDepartment] = useState(null);
 
-  const [loading, setLoading] =
-    useState(true);
+  const [loading, setLoading] = useState(true);
 
-  const [ticketLoading, setTicketLoading] =
-    useState(false);
+  const [ticketLoading, setTicketLoading] = useState(false);
 
-  const [message, setMessage] =
-    useState("");
+  const [message, setMessage] = useState("");
 
-  const [sending, setSending] =
-    useState(false);
+  const [sending, setSending] = useState(false);
 
-  const [error, setError] =
-    useState("");
-
+  const [error, setError] = useState("");
 
   /*
   |--------------------------------------------------------------------------
@@ -115,12 +91,10 @@ export default function SupportPage() {
   */
 
   async function loadStaff() {
-    const response =
-      await getSupportStaffInfo();
+    const response = await getSupportStaffInfo();
 
     setStaff(response);
   }
-
 
   /*
   |--------------------------------------------------------------------------
@@ -129,12 +103,10 @@ export default function SupportPage() {
   */
 
   async function loadStats() {
-    const response =
-      await getSupportStats();
+    const response = await getSupportStats();
 
     setStats(response.stats);
   }
-
 
   /*
   |--------------------------------------------------------------------------
@@ -168,42 +140,29 @@ export default function SupportPage() {
         filters.status = activeFilter;
       }
 
-      if (
-        activeFilter === "unassigned"
-      ) {
+      if (activeFilter === "unassigned") {
         filters.assignedTo = "unassigned";
       }
 
-      if (
-        activeFilter === "my" &&
-        staff?.id
-      ) {
+      if (activeFilter === "my" && staff?.id) {
         filters.assignedTo = staff.id;
       }
 
       if (activeDepartment) {
-        filters.department =
-          activeDepartment;
+        filters.department = activeDepartment;
       }
 
-      const response =
-        await getSupportTickets(filters);
+      const response = await getSupportTickets(filters);
 
-      setTickets(
-        response.tickets || [],
-      );
+      setTickets(response.tickets || []);
     } catch (err) {
       console.error(err);
 
-      setError(
-        err.message ||
-          "Nu s-au putut încărca ticketurile.",
-      );
+      setError(err.message || "Nu s-au putut încărca ticketurile.");
     } finally {
       setLoading(false);
     }
   }
-
 
   /*
   |--------------------------------------------------------------------------
@@ -219,16 +178,12 @@ export default function SupportPage() {
       } catch (err) {
         console.error(err);
 
-        setError(
-          err.message ||
-            "Nu s-au putut încărca datele Support.",
-        );
+        setError(err.message || "Nu s-au putut încărca datele Support.");
       }
     }
 
     init();
   }, []);
-
 
   /*
   |--------------------------------------------------------------------------
@@ -240,13 +195,7 @@ export default function SupportPage() {
     if (!staff) return;
 
     loadTickets();
-  }, [
-    staff,
-    activeFilter,
-    activeDepartment,
-  ]);
-
-
+  }, [staff, activeFilter, activeDepartment]);
 
   /*
   |--------------------------------------------------------------------------
@@ -269,9 +218,7 @@ export default function SupportPage() {
       }
 
       setTickets((current) => {
-        const exists = current.some(
-          (item) => item._id === ticket._id,
-        );
+        const exists = current.some((item) => item._id === ticket._id);
 
         if (exists) {
           return current;
@@ -303,18 +250,11 @@ export default function SupportPage() {
       }
 
       setTickets((current) =>
-        current.map((item) =>
-          item._id === ticket._id
-            ? ticket
-            : item,
-        ),
+        current.map((item) => (item._id === ticket._id ? ticket : item)),
       );
 
       setSelectedTicket((current) => {
-        if (
-          !current ||
-          current._id !== ticket._id
-        ) {
+        if (!current || current._id !== ticket._id) {
           return current;
         }
 
@@ -330,18 +270,11 @@ export default function SupportPage() {
       }
 
       setTickets((current) =>
-        current.map((item) =>
-          item._id === ticket._id
-            ? ticket
-            : item,
-        ),
+        current.map((item) => (item._id === ticket._id ? ticket : item)),
       );
 
       setSelectedTicket((current) => {
-        if (
-          !current ||
-          current._id !== ticket._id
-        ) {
+        if (!current || current._id !== ticket._id) {
           return current;
         }
 
@@ -363,13 +296,9 @@ export default function SupportPage() {
             return ticket;
           }
 
-          const alreadyExists =
-            ticket.messages?.some(
-              (item) =>
-                item._id &&
-                newMessage._id &&
-                item._id === newMessage._id,
-            );
+          const alreadyExists = ticket.messages?.some(
+            (item) => item._id && newMessage._id && item._id === newMessage._id,
+          );
 
           if (alreadyExists) {
             return ticket;
@@ -377,29 +306,19 @@ export default function SupportPage() {
 
           return {
             ...ticket,
-            messages: [
-              ...(ticket.messages || []),
-              newMessage,
-            ],
+            messages: [...(ticket.messages || []), newMessage],
           };
         }),
       );
 
       setSelectedTicket((current) => {
-        if (
-          !current ||
-          current._id !== ticketId
-        ) {
+        if (!current || current._id !== ticketId) {
           return current;
         }
 
-        const alreadyExists =
-          current.messages?.some(
-            (item) =>
-              item._id &&
-              newMessage._id &&
-              item._id === newMessage._id,
-          );
+        const alreadyExists = current.messages?.some(
+          (item) => item._id && newMessage._id && item._id === newMessage._id,
+        );
 
         if (alreadyExists) {
           return current;
@@ -407,54 +326,27 @@ export default function SupportPage() {
 
         return {
           ...current,
-          messages: [
-            ...(current.messages || []),
-            newMessage,
-          ],
+          messages: [...(current.messages || []), newMessage],
         };
       });
     }
 
-    socket.on(
-      "support:ticket:new",
-      handleTicketNew,
-    );
+    socket.on("support:ticket:new", handleTicketNew);
 
-    socket.on(
-      "support:ticket:updated",
-      handleTicketUpdated,
-    );
+    socket.on("support:ticket:updated", handleTicketUpdated);
 
-    socket.on(
-      "support:ticket:assigned",
-      handleTicketAssigned,
-    );
+    socket.on("support:ticket:assigned", handleTicketAssigned);
 
-    socket.on(
-      "support:message:new",
-      handleMessageNew,
-    );
+    socket.on("support:message:new", handleMessageNew);
 
     return () => {
-      socket.off(
-        "support:ticket:new",
-        handleTicketNew,
-      );
+      socket.off("support:ticket:new", handleTicketNew);
 
-      socket.off(
-        "support:ticket:updated",
-        handleTicketUpdated,
-      );
+      socket.off("support:ticket:updated", handleTicketUpdated);
 
-      socket.off(
-        "support:ticket:assigned",
-        handleTicketAssigned,
-      );
+      socket.off("support:ticket:assigned", handleTicketAssigned);
 
-      socket.off(
-        "support:message:new",
-        handleMessageNew,
-      );
+      socket.off("support:message:new", handleMessageNew);
 
       disconnectSupportSocket();
     };
@@ -471,26 +363,17 @@ export default function SupportPage() {
       setTicketLoading(true);
       setError("");
 
-      const response =
-        await getSupportTicket(
-          ticketId,
-        );
+      const response = await getSupportTicket(ticketId);
 
-      setSelectedTicket(
-        response.ticket,
-      );
+      setSelectedTicket(response.ticket);
     } catch (err) {
       console.error(err);
 
-      setError(
-        err.message ||
-          "Ticketul nu a putut fi încărcat.",
-      );
+      setError(err.message || "Ticketul nu a putut fi încărcat.");
     } finally {
       setTicketLoading(false);
     }
   }
-
 
   /*
   |--------------------------------------------------------------------------
@@ -502,26 +385,17 @@ export default function SupportPage() {
     if (!selectedTicket) return;
 
     try {
-      const response =
-        await assignSupportTicket(
-          selectedTicket._id,
-        );
+      const response = await assignSupportTicket(selectedTicket._id);
 
-      setSelectedTicket(
-        response.ticket,
-      );
+      setSelectedTicket(response.ticket);
 
       await loadTickets();
     } catch (err) {
       console.error(err);
 
-      setError(
-        err.message ||
-          "Ticketul nu a putut fi preluat.",
-      );
+      setError(err.message || "Ticketul nu a putut fi preluat.");
     }
   }
-
 
   /*
   |--------------------------------------------------------------------------
@@ -533,28 +407,21 @@ export default function SupportPage() {
     if (!selectedTicket) return;
 
     try {
-      const response =
-        await updateSupportTicketStatus(
-          selectedTicket._id,
-          status,
-        );
-
-      setSelectedTicket(
-        response.ticket,
+      const response = await updateSupportTicketStatus(
+        selectedTicket._id,
+        status,
       );
+
+      setSelectedTicket(response.ticket);
 
       await loadTickets();
       await loadStats();
     } catch (err) {
       console.error(err);
 
-      setError(
-        err.message ||
-          "Statusul nu a putut fi schimbat.",
-      );
+      setError(err.message || "Statusul nu a putut fi schimbat.");
     }
   }
-
 
   /*
   |--------------------------------------------------------------------------
@@ -562,33 +429,24 @@ export default function SupportPage() {
   |--------------------------------------------------------------------------
   */
 
-  async function changePriority(
-    priority,
-  ) {
+  async function changePriority(priority) {
     if (!selectedTicket) return;
 
     try {
-      const response =
-        await updateSupportTicketPriority(
-          selectedTicket._id,
-          priority,
-        );
-
-      setSelectedTicket(
-        response.ticket,
+      const response = await updateSupportTicketPriority(
+        selectedTicket._id,
+        priority,
       );
+
+      setSelectedTicket(response.ticket);
 
       await loadTickets();
     } catch (err) {
       console.error(err);
 
-      setError(
-        err.message ||
-          "Prioritatea nu a putut fi schimbată.",
-      );
+      setError(err.message || "Prioritatea nu a putut fi schimbată.");
     }
   }
-
 
   /*
   |--------------------------------------------------------------------------
@@ -597,41 +455,30 @@ export default function SupportPage() {
   */
 
   async function sendMessage() {
-    if (
-      !selectedTicket ||
-      !message.trim() ||
-      sending
-    ) {
+    if (!selectedTicket || !message.trim() || sending) {
       return;
     }
 
     try {
       setSending(true);
 
-      const response =
-        await sendSupportMessage(
-          selectedTicket._id,
-          message.trim(),
-        );
-
-      setSelectedTicket(
-        response.ticket,
+      const response = await sendSupportMessage(
+        selectedTicket._id,
+        message.trim(),
       );
+
+      setSelectedTicket(response.ticket);
 
       setMessage("");
       await loadTickets();
     } catch (err) {
       console.error(err);
 
-      setError(
-        err.message ||
-          "Mesajul nu a putut fi trimis.",
-      );
+      setError(err.message || "Mesajul nu a putut fi trimis.");
     } finally {
       setSending(false);
     }
   }
-
 
   /*
   |--------------------------------------------------------------------------
@@ -639,41 +486,28 @@ export default function SupportPage() {
   |--------------------------------------------------------------------------
   */
 
-  const departments =
-    useMemo(() => {
-      return staff?.departments || [];
-    }, [staff]);
-
+  const departments = useMemo(() => {
+    return staff?.departments || [];
+  }, [staff]);
 
   if (loading && !staff) {
-    return (
-      <div className="support-page-loading">
-        Se încarcă Support...
-      </div>
-    );
+    return <div className="support-page-loading">Se încarcă Support...</div>;
   }
-
 
   return (
     <div className="support-page">
-
       {/* SIDEBAR */}
 
       <aside className="support-sidebar">
-
         <div className="support-sidebar-header">
           <div>
             <h1>Support</h1>
 
-            <span>
-              {staff?.role || "Support"}
-            </span>
+            <span>{staff?.role || "Support"}</span>
           </div>
         </div>
 
-
         <div className="support-sidebar-section">
-
           <button
             className={
               activeFilter === "my"
@@ -687,11 +521,8 @@ export default function SupportPage() {
           >
             <span>My Tickets</span>
 
-            <strong>
-              {stats?.my ?? 0}
-            </strong>
+            <strong>{stats?.my ?? 0}</strong>
           </button>
-
 
           <button
             className={
@@ -700,19 +531,14 @@ export default function SupportPage() {
                 : "support-nav-item"
             }
             onClick={() => {
-              setActiveFilter(
-                "unassigned",
-              );
+              setActiveFilter("unassigned");
               setActiveDepartment(null);
             }}
           >
             <span>Unassigned</span>
 
-            <strong>
-              {stats?.unassigned ?? 0}
-            </strong>
+            <strong>{stats?.unassigned ?? 0}</strong>
           </button>
-
 
           <button
             className={
@@ -727,11 +553,8 @@ export default function SupportPage() {
           >
             <span>Open</span>
 
-            <strong>
-              {stats?.open ?? 0}
-            </strong>
+            <strong>{stats?.open ?? 0}</strong>
           </button>
-
 
           <button
             className={
@@ -746,11 +569,8 @@ export default function SupportPage() {
           >
             <span>On Hold</span>
 
-            <strong>
-              {stats?.pending ?? 0}
-            </strong>
+            <strong>{stats?.pending ?? 0}</strong>
           </button>
-
 
           <button
             className={
@@ -765,386 +585,210 @@ export default function SupportPage() {
           >
             <span>Resolved</span>
 
-            <strong>
-              {stats?.closed ?? 0}
-            </strong>
+            <strong>{stats?.closed ?? 0}</strong>
           </button>
-
         </div>
 
-
-        <div className="support-sidebar-title">
-          DEPARTMENTS
-        </div>
-
+        <div className="support-sidebar-title">DEPARTMENTS</div>
 
         <div className="support-departments">
+          {departments.map((department) => (
+            <button
+              key={department}
+              className={
+                activeDepartment === department
+                  ? "support-department active"
+                  : "support-department"
+              }
+              onClick={() => {
+                setActiveDepartment(department);
 
-          {departments.map(
-            (department) => (
-              <button
-                key={department}
-                className={
-                  activeDepartment ===
-                  department
-                    ? "support-department active"
-                    : "support-department"
-                }
-                onClick={() => {
-                  setActiveDepartment(
-                    department,
-                  );
+                setActiveFilter("all");
+              }}
+            >
+              <span className="department-dot" />
 
-                  setActiveFilter(
-                    "all",
-                  );
-                }}
-              >
-                <span className="department-dot" />
-
-                <span>
-                  {
-                    DEPARTMENT_LABELS[
-                      department
-                    ] ||
-                      department
-                  }
-                </span>
-              </button>
-            ),
-          )}
-
+              <span>{DEPARTMENT_LABELS[department] || department}</span>
+            </button>
+          ))}
         </div>
-
       </aside>
-
 
       {/* TICKET LIST */}
 
       <section className="support-ticket-list">
-
         <div className="support-list-header">
-
           <div>
             <h2>
               {activeDepartment
-                ? DEPARTMENT_LABELS[
-                    activeDepartment
-                  ]
+                ? DEPARTMENT_LABELS[activeDepartment]
                 : activeFilter === "my"
                   ? "My Tickets"
-                  : activeFilter ===
-                      "unassigned"
+                  : activeFilter === "unassigned"
                     ? "Unassigned"
-                    : activeFilter ===
-                        "open"
+                    : activeFilter === "open"
                       ? "Open"
-                      : activeFilter ===
-                          "pending"
+                      : activeFilter === "pending"
                         ? "On Hold"
-                        : activeFilter ===
-                            "closed"
+                        : activeFilter === "closed"
                           ? "Resolved"
                           : "Tickets"}
             </h2>
 
-            <span>
-              {tickets.length} ticketuri
-            </span>
+            <span>{tickets.length} ticketuri</span>
           </div>
-
         </div>
 
-
-        {error && (
-          <div className="support-error">
-            {error}
-          </div>
-        )}
-
+        {error && <div className="support-error">{error}</div>}
 
         <div className="support-tickets">
-
           {loading ? (
-            <div className="support-empty">
-              Se încarcă...
-            </div>
+            <div className="support-empty">Se încarcă...</div>
           ) : tickets.length === 0 ? (
-            <div className="support-empty">
-              Nu există ticketuri.
-            </div>
+            <div className="support-empty">Nu există ticketuri.</div>
           ) : (
             tickets.map((ticket) => (
               <button
                 key={ticket._id}
                 className={
-                  selectedTicket?._id ===
-                  ticket._id
+                  selectedTicket?._id === ticket._id
                     ? "support-ticket active"
                     : "support-ticket"
                 }
-                onClick={() =>
-                  openTicket(
-                    ticket._id,
-                  )
-                }
+                onClick={() => openTicket(ticket._id)}
               >
-
                 <div className="ticket-top">
+                  <div className="ticket-title-row">
+                    <span className="ticket-number">
+                      #{ticket.ticketNumber}
+                    </span>
 
-                  <span className="ticket-subject">
-                    {ticket.subject}
-                  </span>
+                    <span className="ticket-subject">{ticket.subject}</span>
+                  </div>
 
                   <span className="ticket-date">
-                    {formatDate(
-                      ticket.updatedAt,
-                    )}
+                    {formatDate(ticket.updatedAt)}
                   </span>
-
                 </div>
 
-
-                <div className="ticket-preview">
-                  {getTicketPreview(
-                    ticket,
-                  )}
-                </div>
-
+                <div className="ticket-preview">{getTicketPreview(ticket)}</div>
 
                 <div className="ticket-meta">
-
-                  <span
-                    className={`ticket-status status-${ticket.status}`}
-                  >
-                    {
-                      STATUS_LABELS[
-                        ticket.status
-                      ] ||
-                        ticket.status
-                    }
+                  <span className={`ticket-status status-${ticket.status}`}>
+                    {STATUS_LABELS[ticket.status] || ticket.status}
                   </span>
-
 
                   <span
                     className={`ticket-priority priority-${ticket.priority}`}
                   >
-                    {
-                      PRIORITY_LABELS[
-                        ticket.priority
-                      ] ||
-                        ticket.priority
-                    }
+                    {PRIORITY_LABELS[ticket.priority] || ticket.priority}
                   </span>
-
 
                   <span className="ticket-department">
-                    {
-                      DEPARTMENT_LABELS[
-                        ticket.department
-                      ] ||
-                        ticket.department
-                    }
+                    {DEPARTMENT_LABELS[ticket.department] || ticket.department}
                   </span>
-
                 </div>
-
               </button>
             ))
           )}
-
         </div>
-
       </section>
-
 
       {/* CONVERSATION */}
 
       <main className="support-conversation">
-
         {!selectedTicket ? (
           <div className="support-no-ticket">
-            <div className="support-no-ticket-icon">
-              ?
-            </div>
+            <div className="support-no-ticket-icon">?</div>
 
-            <h2>
-              Selectează un ticket
-            </h2>
+            <h2>Selectează un ticket</h2>
 
-            <p>
-              Selectează un ticket din listă
-              pentru a vedea conversația.
-            </p>
+            <p>Selectează un ticket din listă pentru a vedea conversația.</p>
           </div>
         ) : ticketLoading ? (
-          <div className="support-no-ticket">
-            Se încarcă ticketul...
-          </div>
+          <div className="support-no-ticket">Se încarcă ticketul...</div>
         ) : (
           <>
             <header className="conversation-header">
-
               <div>
-
                 <span className="conversation-department">
-                  {
-                    DEPARTMENT_LABELS[
-                      selectedTicket
-                        .department
-                    ] ||
-                      selectedTicket.department
-                  }
+                  {DEPARTMENT_LABELS[selectedTicket.department] ||
+                    selectedTicket.department}
                 </span>
 
-                <h2>
-                  {
-                    selectedTicket.subject
-                  }
-                </h2>
+                <h2>{selectedTicket.subject}</h2>
 
                 <span className="conversation-category">
-                  {
-                    selectedTicket.category
-                  }
+                  {selectedTicket.category}
                 </span>
-
               </div>
 
-
               <div className="conversation-actions">
-
                 {!selectedTicket.assignedTo && (
-                  <button
-                    onClick={
-                      assignToMe
-                    }
-                    className="button-primary"
-                  >
+                  <button onClick={assignToMe} className="button-primary">
                     Assign to me
                   </button>
                 )}
 
-
                 <select
-                  value={
-                    selectedTicket.status
-                  }
-                  onChange={(event) =>
-                    changeStatus(
-                      event.target.value,
-                    )
-                  }
+                  value={selectedTicket.status}
+                  onChange={(event) => changeStatus(event.target.value)}
                 >
-                  <option value="open">
-                    Open
-                  </option>
+                  <option value="open">Open</option>
 
-                  <option value="pending">
-                    On Hold
-                  </option>
+                  <option value="pending">On Hold</option>
 
-                  <option value="closed">
-                    Resolved
-                  </option>
+                  <option value="closed">Resolved</option>
                 </select>
 
-
                 <select
-                  value={
-                    selectedTicket.priority
-                  }
-                  onChange={(event) =>
-                    changePriority(
-                      event.target.value,
-                    )
-                  }
+                  value={selectedTicket.priority}
+                  onChange={(event) => changePriority(event.target.value)}
                 >
-                  <option value="low">
-                    Low
-                  </option>
+                  <option value="low">Low</option>
 
-                  <option value="normal">
-                    Normal
-                  </option>
+                  <option value="normal">Normal</option>
 
-                  <option value="high">
-                    High
-                  </option>
+                  <option value="high">High</option>
 
-                  <option value="urgent">
-                    Urgent
-                  </option>
+                  <option value="urgent">Urgent</option>
                 </select>
-
               </div>
-
             </header>
 
-
             <div className="conversation-messages">
+              {selectedTicket.messages?.map((item, index) => {
+                const isStaff = item.senderType === "admin";
 
-              {selectedTicket.messages?.map(
-                (item, index) => {
-
-                  const isStaff =
-                    item.senderType ===
-                    "admin";
-
-                  return (
-                    <div
-                      key={
-                        item._id ||
-                        index
-                      }
-                      className={
-                        isStaff
-                          ? "conversation-message staff"
-                          : "conversation-message user"
-                      }
-                    >
-
-                      <div className="message-author">
-                        {isStaff
-                          ? "Support"
-                          : "Client"}
-                      </div>
-
-                      <div className="message-bubble">
-                        {
-                          item.message
-                        }
-                      </div>
-
-                      <div className="message-time">
-                        {formatDate(
-                          item.createdAt,
-                        )}
-                      </div>
-
+                return (
+                  <div
+                    key={item._id || index}
+                    className={
+                      isStaff
+                        ? "conversation-message staff"
+                        : "conversation-message user"
+                    }
+                  >
+                    <div className="message-author">
+                      {isStaff ? "Support" : "Client"}
                     </div>
-                  );
-                },
-              )}
 
+                    <div className="message-bubble">{item.message}</div>
+
+                    <div className="message-time">
+                      {formatDate(item.createdAt)}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
 
-
             <div className="conversation-composer">
-
               <textarea
                 value={message}
-                onChange={(event) =>
-                  setMessage(
-                    event.target.value,
-                  )
-                }
+                onChange={(event) => setMessage(event.target.value)}
                 onKeyDown={(event) => {
-                  if (
-                    event.key ===
-                      "Enter" &&
-                    !event.shiftKey
-                  ) {
+                  if (event.key === "Enter" && !event.shiftKey) {
                     event.preventDefault();
                     sendMessage();
                   }
@@ -1156,23 +800,14 @@ export default function SupportPage() {
               <button
                 className="button-primary"
                 onClick={sendMessage}
-                disabled={
-                  sending ||
-                  !message.trim()
-                }
+                disabled={sending || !message.trim()}
               >
-                {sending
-                  ? "Se trimite..."
-                  : "Trimite"}
+                {sending ? "Se trimite..." : "Trimite"}
               </button>
-
             </div>
-
           </>
         )}
-
       </main>
-
     </div>
   );
 }
